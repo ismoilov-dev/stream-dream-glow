@@ -9,15 +9,29 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SeriesRouteImport } from './routes/series'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as MoviesRouteImport } from './routes/movies'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SeriesSlugRouteImport } from './routes/series.$slug'
+import { Route as MoviesSlugRouteImport } from './routes/movies.$slug'
 import { Route as ApiProxySplatRouteImport } from './routes/api/proxy/$'
 
+const SeriesRoute = SeriesRouteImport.update({
+  id: '/series',
+  path: '/series',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MoviesRoute = MoviesRouteImport.update({
+  id: '/movies',
+  path: '/movies',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -35,6 +49,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SeriesSlugRoute = SeriesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => SeriesRoute,
+} as any)
+const MoviesSlugRoute = MoviesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => MoviesRoute,
+} as any)
 const ApiProxySplatRoute = ApiProxySplatRouteImport.update({
   id: '/api/proxy/$',
   path: '/api/proxy/$',
@@ -45,14 +69,22 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/movies': typeof MoviesRouteWithChildren
   '/register': typeof RegisterRoute
+  '/series': typeof SeriesRouteWithChildren
+  '/movies/$slug': typeof MoviesSlugRoute
+  '/series/$slug': typeof SeriesSlugRoute
   '/api/proxy/$': typeof ApiProxySplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/movies': typeof MoviesRouteWithChildren
   '/register': typeof RegisterRoute
+  '/series': typeof SeriesRouteWithChildren
+  '/movies/$slug': typeof MoviesSlugRoute
+  '/series/$slug': typeof SeriesSlugRoute
   '/api/proxy/$': typeof ApiProxySplatRoute
 }
 export interface FileRoutesById {
@@ -60,20 +92,46 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/movies': typeof MoviesRouteWithChildren
   '/register': typeof RegisterRoute
+  '/series': typeof SeriesRouteWithChildren
+  '/movies/$slug': typeof MoviesSlugRoute
+  '/series/$slug': typeof SeriesSlugRoute
   '/api/proxy/$': typeof ApiProxySplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/forgot-password' | '/login' | '/register' | '/api/proxy/$'
+  fullPaths:
+    | '/'
+    | '/forgot-password'
+    | '/login'
+    | '/movies'
+    | '/register'
+    | '/series'
+    | '/movies/$slug'
+    | '/series/$slug'
+    | '/api/proxy/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/forgot-password' | '/login' | '/register' | '/api/proxy/$'
+  to:
+    | '/'
+    | '/forgot-password'
+    | '/login'
+    | '/movies'
+    | '/register'
+    | '/series'
+    | '/movies/$slug'
+    | '/series/$slug'
+    | '/api/proxy/$'
   id:
     | '__root__'
     | '/'
     | '/forgot-password'
     | '/login'
+    | '/movies'
     | '/register'
+    | '/series'
+    | '/movies/$slug'
+    | '/series/$slug'
     | '/api/proxy/$'
   fileRoutesById: FileRoutesById
 }
@@ -81,17 +139,33 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
+  MoviesRoute: typeof MoviesRouteWithChildren
   RegisterRoute: typeof RegisterRoute
+  SeriesRoute: typeof SeriesRouteWithChildren
   ApiProxySplatRoute: typeof ApiProxySplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/series': {
+      id: '/series'
+      path: '/series'
+      fullPath: '/series'
+      preLoaderRoute: typeof SeriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/movies': {
+      id: '/movies'
+      path: '/movies'
+      fullPath: '/movies'
+      preLoaderRoute: typeof MoviesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -115,6 +189,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/series/$slug': {
+      id: '/series/$slug'
+      path: '/$slug'
+      fullPath: '/series/$slug'
+      preLoaderRoute: typeof SeriesSlugRouteImport
+      parentRoute: typeof SeriesRoute
+    }
+    '/movies/$slug': {
+      id: '/movies/$slug'
+      path: '/$slug'
+      fullPath: '/movies/$slug'
+      preLoaderRoute: typeof MoviesSlugRouteImport
+      parentRoute: typeof MoviesRoute
+    }
     '/api/proxy/$': {
       id: '/api/proxy/$'
       path: '/api/proxy/$'
@@ -125,11 +213,35 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface MoviesRouteChildren {
+  MoviesSlugRoute: typeof MoviesSlugRoute
+}
+
+const MoviesRouteChildren: MoviesRouteChildren = {
+  MoviesSlugRoute: MoviesSlugRoute,
+}
+
+const MoviesRouteWithChildren =
+  MoviesRoute._addFileChildren(MoviesRouteChildren)
+
+interface SeriesRouteChildren {
+  SeriesSlugRoute: typeof SeriesSlugRoute
+}
+
+const SeriesRouteChildren: SeriesRouteChildren = {
+  SeriesSlugRoute: SeriesSlugRoute,
+}
+
+const SeriesRouteWithChildren =
+  SeriesRoute._addFileChildren(SeriesRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
+  MoviesRoute: MoviesRouteWithChildren,
   RegisterRoute: RegisterRoute,
+  SeriesRoute: SeriesRouteWithChildren,
   ApiProxySplatRoute: ApiProxySplatRoute,
 }
 export const routeTree = rootRouteImport
