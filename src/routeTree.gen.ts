@@ -9,38 +9,345 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WatchlistRouteImport } from './routes/watchlist'
+import { Route as SubscriptionsRouteImport } from './routes/subscriptions'
+import { Route as SeriesRouteImport } from './routes/series'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as MoviesRouteImport } from './routes/movies'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as HistoryRouteImport } from './routes/history'
+import { Route as GenresRouteImport } from './routes/genres'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SeriesSlugRouteImport } from './routes/series.$slug'
+import { Route as MoviesSlugRouteImport } from './routes/movies.$slug'
+import { Route as WatchMovieSlugRouteImport } from './routes/watch.movie.$slug'
+import { Route as WatchEpisodeIdRouteImport } from './routes/watch.episode.$id'
+import { Route as ApiProxySplatRouteImport } from './routes/api/proxy/$'
 
+const WatchlistRoute = WatchlistRouteImport.update({
+  id: '/watchlist',
+  path: '/watchlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubscriptionsRoute = SubscriptionsRouteImport.update({
+  id: '/subscriptions',
+  path: '/subscriptions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SeriesRoute = SeriesRouteImport.update({
+  id: '/series',
+  path: '/series',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MoviesRoute = MoviesRouteImport.update({
+  id: '/movies',
+  path: '/movies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GenresRoute = GenresRouteImport.update({
+  id: '/genres',
+  path: '/genres',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SeriesSlugRoute = SeriesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => SeriesRoute,
+} as any)
+const MoviesSlugRoute = MoviesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => MoviesRoute,
+} as any)
+const WatchMovieSlugRoute = WatchMovieSlugRouteImport.update({
+  id: '/watch/movie/$slug',
+  path: '/watch/movie/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WatchEpisodeIdRoute = WatchEpisodeIdRouteImport.update({
+  id: '/watch/episode/$id',
+  path: '/watch/episode/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiProxySplatRoute = ApiProxySplatRouteImport.update({
+  id: '/api/proxy/$',
+  path: '/api/proxy/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/genres': typeof GenresRoute
+  '/history': typeof HistoryRoute
+  '/login': typeof LoginRoute
+  '/movies': typeof MoviesRouteWithChildren
+  '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
+  '/search': typeof SearchRoute
+  '/series': typeof SeriesRouteWithChildren
+  '/subscriptions': typeof SubscriptionsRoute
+  '/watchlist': typeof WatchlistRoute
+  '/movies/$slug': typeof MoviesSlugRoute
+  '/series/$slug': typeof SeriesSlugRoute
+  '/api/proxy/$': typeof ApiProxySplatRoute
+  '/watch/episode/$id': typeof WatchEpisodeIdRoute
+  '/watch/movie/$slug': typeof WatchMovieSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/genres': typeof GenresRoute
+  '/history': typeof HistoryRoute
+  '/login': typeof LoginRoute
+  '/movies': typeof MoviesRouteWithChildren
+  '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
+  '/search': typeof SearchRoute
+  '/series': typeof SeriesRouteWithChildren
+  '/subscriptions': typeof SubscriptionsRoute
+  '/watchlist': typeof WatchlistRoute
+  '/movies/$slug': typeof MoviesSlugRoute
+  '/series/$slug': typeof SeriesSlugRoute
+  '/api/proxy/$': typeof ApiProxySplatRoute
+  '/watch/episode/$id': typeof WatchEpisodeIdRoute
+  '/watch/movie/$slug': typeof WatchMovieSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/genres': typeof GenresRoute
+  '/history': typeof HistoryRoute
+  '/login': typeof LoginRoute
+  '/movies': typeof MoviesRouteWithChildren
+  '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
+  '/search': typeof SearchRoute
+  '/series': typeof SeriesRouteWithChildren
+  '/subscriptions': typeof SubscriptionsRoute
+  '/watchlist': typeof WatchlistRoute
+  '/movies/$slug': typeof MoviesSlugRoute
+  '/series/$slug': typeof SeriesSlugRoute
+  '/api/proxy/$': typeof ApiProxySplatRoute
+  '/watch/episode/$id': typeof WatchEpisodeIdRoute
+  '/watch/movie/$slug': typeof WatchMovieSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/forgot-password'
+    | '/genres'
+    | '/history'
+    | '/login'
+    | '/movies'
+    | '/profile'
+    | '/register'
+    | '/search'
+    | '/series'
+    | '/subscriptions'
+    | '/watchlist'
+    | '/movies/$slug'
+    | '/series/$slug'
+    | '/api/proxy/$'
+    | '/watch/episode/$id'
+    | '/watch/movie/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/forgot-password'
+    | '/genres'
+    | '/history'
+    | '/login'
+    | '/movies'
+    | '/profile'
+    | '/register'
+    | '/search'
+    | '/series'
+    | '/subscriptions'
+    | '/watchlist'
+    | '/movies/$slug'
+    | '/series/$slug'
+    | '/api/proxy/$'
+    | '/watch/episode/$id'
+    | '/watch/movie/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/forgot-password'
+    | '/genres'
+    | '/history'
+    | '/login'
+    | '/movies'
+    | '/profile'
+    | '/register'
+    | '/search'
+    | '/series'
+    | '/subscriptions'
+    | '/watchlist'
+    | '/movies/$slug'
+    | '/series/$slug'
+    | '/api/proxy/$'
+    | '/watch/episode/$id'
+    | '/watch/movie/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  GenresRoute: typeof GenresRoute
+  HistoryRoute: typeof HistoryRoute
+  LoginRoute: typeof LoginRoute
+  MoviesRoute: typeof MoviesRouteWithChildren
+  ProfileRoute: typeof ProfileRoute
+  RegisterRoute: typeof RegisterRoute
+  SearchRoute: typeof SearchRoute
+  SeriesRoute: typeof SeriesRouteWithChildren
+  SubscriptionsRoute: typeof SubscriptionsRoute
+  WatchlistRoute: typeof WatchlistRoute
+  ApiProxySplatRoute: typeof ApiProxySplatRoute
+  WatchEpisodeIdRoute: typeof WatchEpisodeIdRoute
+  WatchMovieSlugRoute: typeof WatchMovieSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/watchlist': {
+      id: '/watchlist'
+      path: '/watchlist'
+      fullPath: '/watchlist'
+      preLoaderRoute: typeof WatchlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/subscriptions': {
+      id: '/subscriptions'
+      path: '/subscriptions'
+      fullPath: '/subscriptions'
+      preLoaderRoute: typeof SubscriptionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/series': {
+      id: '/series'
+      path: '/series'
+      fullPath: '/series'
+      preLoaderRoute: typeof SeriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/movies': {
+      id: '/movies'
+      path: '/movies'
+      fullPath: '/movies'
+      preLoaderRoute: typeof MoviesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/genres': {
+      id: '/genres'
+      path: '/genres'
+      fullPath: '/genres'
+      preLoaderRoute: typeof GenresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +355,84 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/series/$slug': {
+      id: '/series/$slug'
+      path: '/$slug'
+      fullPath: '/series/$slug'
+      preLoaderRoute: typeof SeriesSlugRouteImport
+      parentRoute: typeof SeriesRoute
+    }
+    '/movies/$slug': {
+      id: '/movies/$slug'
+      path: '/$slug'
+      fullPath: '/movies/$slug'
+      preLoaderRoute: typeof MoviesSlugRouteImport
+      parentRoute: typeof MoviesRoute
+    }
+    '/watch/movie/$slug': {
+      id: '/watch/movie/$slug'
+      path: '/watch/movie/$slug'
+      fullPath: '/watch/movie/$slug'
+      preLoaderRoute: typeof WatchMovieSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/watch/episode/$id': {
+      id: '/watch/episode/$id'
+      path: '/watch/episode/$id'
+      fullPath: '/watch/episode/$id'
+      preLoaderRoute: typeof WatchEpisodeIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/proxy/$': {
+      id: '/api/proxy/$'
+      path: '/api/proxy/$'
+      fullPath: '/api/proxy/$'
+      preLoaderRoute: typeof ApiProxySplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface MoviesRouteChildren {
+  MoviesSlugRoute: typeof MoviesSlugRoute
+}
+
+const MoviesRouteChildren: MoviesRouteChildren = {
+  MoviesSlugRoute: MoviesSlugRoute,
+}
+
+const MoviesRouteWithChildren =
+  MoviesRoute._addFileChildren(MoviesRouteChildren)
+
+interface SeriesRouteChildren {
+  SeriesSlugRoute: typeof SeriesSlugRoute
+}
+
+const SeriesRouteChildren: SeriesRouteChildren = {
+  SeriesSlugRoute: SeriesSlugRoute,
+}
+
+const SeriesRouteWithChildren =
+  SeriesRoute._addFileChildren(SeriesRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  GenresRoute: GenresRoute,
+  HistoryRoute: HistoryRoute,
+  LoginRoute: LoginRoute,
+  MoviesRoute: MoviesRouteWithChildren,
+  ProfileRoute: ProfileRoute,
+  RegisterRoute: RegisterRoute,
+  SearchRoute: SearchRoute,
+  SeriesRoute: SeriesRouteWithChildren,
+  SubscriptionsRoute: SubscriptionsRoute,
+  WatchlistRoute: WatchlistRoute,
+  ApiProxySplatRoute: ApiProxySplatRoute,
+  WatchEpisodeIdRoute: WatchEpisodeIdRoute,
+  WatchMovieSlugRoute: WatchMovieSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
