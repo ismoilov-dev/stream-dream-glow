@@ -20,7 +20,8 @@ import type {
   WatchProgress,
 } from "./types";
 
-export const API_BASE = "/api/proxy";
+export const API_BASE = "/api/proxy/api";
+export const PROXY_ROOT = "/api/proxy";
 
 export const api = axios.create({
   baseURL: API_BASE,
@@ -216,9 +217,13 @@ export function unwrapList<T>(data: T[] | Paginated<T> | undefined): T[] {
   return data.results ?? [];
 }
 
-export function imageUrl(url?: string | null): string | undefined {
+/** Rewrite an upstream HTTP asset URL through the same-origin HTTPS proxy. */
+export function assetUrl(url?: string | null): string | undefined {
   if (!url) return undefined;
-  if (url.startsWith("http://16.170.235.75")) return url.replace("http://16.170.235.75", "/api/proxy/..").replace("/api/proxy/../api/", "/api/proxy/");
-  if (url.startsWith("/")) return `/api/proxy/..${url}`.replace("/api/proxy/../api/", "/api/proxy/");
-  return url;
+  try {
+    const u = new URL(url, "http://16.170.235.75");
+    return `${PROXY_ROOT}${u.pathname}${u.search}`;
+  } catch {
+    return url;
+  }
 }

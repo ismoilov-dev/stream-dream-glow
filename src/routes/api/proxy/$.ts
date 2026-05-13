@@ -19,7 +19,7 @@ const HOP_BY_HOP = new Set([
 
 async function forward(request: Request, splat: string) {
   const inUrl = new URL(request.url);
-  const target = `${UPSTREAM}/api/${splat}${inUrl.search}`;
+  const target = `${UPSTREAM}/${splat}${inUrl.search}`;
 
   const headers = new Headers();
   request.headers.forEach((value, key) => {
