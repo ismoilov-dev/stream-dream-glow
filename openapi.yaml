@@ -1,0 +1,6257 @@
+openapi: 3.0.3
+info:
+  title: StreamPlay API
+  version: 1.0.0
+  description: |-
+    Video on Demand (VOD) platformasi uchun REST API.
+
+    **Xususiyatlari:**
+    - Filmlar, seriallar, epizodlar
+    - Obuna tizimi (SVOD)
+    - Ko'rish tarixi va progress
+    - Qidiruv va tavsiyalar
+    - Chunked fayl yuklash
+    - JWT autentifikatsiya
+paths:
+  /api/actors/:
+    get:
+      operationId: actors_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - actors
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedActorList'
+          description: ''
+    post:
+      operationId: actors_create
+      tags:
+      - actors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActorRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ActorRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ActorRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Actor'
+          description: ''
+  /api/actors/{slug}/:
+    get:
+      operationId: actors_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - actors
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Actor'
+          description: ''
+    put:
+      operationId: actors_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - actors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActorRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ActorRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ActorRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Actor'
+          description: ''
+    patch:
+      operationId: actors_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - actors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedActorRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedActorRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedActorRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Actor'
+          description: ''
+    delete:
+      operationId: actors_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - actors
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/analytics/buffering/:
+    get:
+      operationId: analytics_buffering_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - analytics
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBufferingEventList'
+          description: ''
+    post:
+      operationId: analytics_buffering_create
+      tags:
+      - analytics
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BufferingEventRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BufferingEventRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BufferingEventRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BufferingEvent'
+          description: ''
+  /api/analytics/buffering/{id}/:
+    get:
+      operationId: analytics_buffering_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Buffering event.
+        required: true
+      tags:
+      - analytics
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BufferingEvent'
+          description: ''
+  /api/analytics/favorites/:
+    get:
+      operationId: analytics_favorites_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFavoriteList'
+          description: ''
+    post:
+      operationId: analytics_favorites_create
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavoriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FavoriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FavoriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorite'
+          description: ''
+  /api/analytics/favorites/{id}/:
+    get:
+      operationId: analytics_favorites_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Sevimli.
+        required: true
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorite'
+          description: ''
+    delete:
+      operationId: analytics_favorites_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Sevimli.
+        required: true
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/analytics/history/:
+    get:
+      operationId: analytics_history_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - history
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWatchHistoryList'
+          description: ''
+    post:
+      operationId: analytics_history_create
+      tags:
+      - history
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WatchHistoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WatchHistoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WatchHistoryRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WatchHistory'
+          description: ''
+  /api/analytics/history/{id}/:
+    get:
+      operationId: analytics_history_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Ko'rish tarixi.
+        required: true
+      tags:
+      - history
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WatchHistory'
+          description: ''
+    delete:
+      operationId: analytics_history_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Ko'rish tarixi.
+        required: true
+      tags:
+      - history
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/analytics/history/clear/:
+    delete:
+      operationId: analytics_history_clear_destroy
+      description: Butun tarixni tozalash.
+      tags:
+      - history
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/analytics/progress/:
+    get:
+      operationId: analytics_progress_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - watch-progress
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWatchProgressList'
+          description: ''
+    post:
+      operationId: analytics_progress_create
+      tags:
+      - watch-progress
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WatchProgressRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WatchProgressRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WatchProgressRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WatchProgress'
+          description: ''
+  /api/analytics/progress/{id}/:
+    get:
+      operationId: analytics_progress_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Ko'rish progressi.
+        required: true
+      tags:
+      - watch-progress
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WatchProgress'
+          description: ''
+    put:
+      operationId: analytics_progress_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Ko'rish progressi.
+        required: true
+      tags:
+      - watch-progress
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WatchProgressRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WatchProgressRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WatchProgressRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WatchProgress'
+          description: ''
+    patch:
+      operationId: analytics_progress_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Ko'rish progressi.
+        required: true
+      tags:
+      - watch-progress
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedWatchProgressRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedWatchProgressRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedWatchProgressRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WatchProgress'
+          description: ''
+    delete:
+      operationId: analytics_progress_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Ko'rish progressi.
+        required: true
+      tags:
+      - watch-progress
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/analytics/progress/continue-watching/:
+    get:
+      operationId: analytics_progress_continue_watching_retrieve
+      description: Davom ettirishga mos — tugatmagan va oxirgi marta ko'rilgan videolar.
+      tags:
+      - watch-progress
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WatchProgress'
+          description: ''
+  /api/analytics/progress/update/:
+    post:
+      operationId: analytics_progress_update_create
+      description: |-
+        Video ko'rish progressini yangilash (upsert).
+        Frontend har 10 soniyada bu endpointga so'rov yuboradi.
+      tags:
+      - watch-progress
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProgressRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UpdateProgressRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateProgressRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WatchProgress'
+          description: ''
+  /api/audio-tracks/:
+    get:
+      operationId: audio_tracks_list
+      parameters:
+      - in: query
+        name: language
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: video_file
+        schema:
+          type: integer
+      tags:
+      - audio-tracks
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAudioTrackList'
+          description: ''
+    post:
+      operationId: audio_tracks_create
+      tags:
+      - audio-tracks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AudioTrackRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AudioTrackRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AudioTrackRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AudioTrack'
+          description: ''
+  /api/audio-tracks/{id}/:
+    get:
+      operationId: audio_tracks_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Audio trek.
+        required: true
+      tags:
+      - audio-tracks
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AudioTrack'
+          description: ''
+    put:
+      operationId: audio_tracks_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Audio trek.
+        required: true
+      tags:
+      - audio-tracks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AudioTrackRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AudioTrackRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AudioTrackRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AudioTrack'
+          description: ''
+    patch:
+      operationId: audio_tracks_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Audio trek.
+        required: true
+      tags:
+      - audio-tracks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAudioTrackRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAudioTrackRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAudioTrackRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AudioTrack'
+          description: ''
+    delete:
+      operationId: audio_tracks_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Audio trek.
+        required: true
+      tags:
+      - audio-tracks
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/auth/login/:
+    post:
+      operationId: auth_login_create
+      description: Login — JWT token olish (username yoki email bilan).
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPairRequest'
+        required: true
+      responses:
+        '200':
+          description: No response body
+  /api/auth/refresh/:
+    post:
+      operationId: auth_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/auth/register/:
+    post:
+      operationId: auth_register_create
+      description: Yangi foydalanuvchi ro'yxatdan o'tish.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Register'
+          description: ''
+  /api/auth/verify/:
+    post:
+      operationId: auth_verify_create
+      description: |-
+        Takes a token and indicates if it is valid.  This view provides no
+        information about a token's fitness for a particular use.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenVerifyRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenVerifyRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenVerifyRequest'
+        required: true
+      responses:
+        '200':
+          description: No response body
+  /api/episodes/:
+    get:
+      operationId: episodes_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: season
+        schema:
+          type: integer
+      - in: query
+        name: series
+        schema:
+          type: integer
+      tags:
+      - episodes
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEpisodeList'
+          description: ''
+    post:
+      operationId: episodes_create
+      tags:
+      - episodes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EpisodeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EpisodeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EpisodeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Episode'
+          description: ''
+  /api/episodes/{id}/:
+    get:
+      operationId: episodes_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Epizod.
+        required: true
+      tags:
+      - episodes
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Episode'
+          description: ''
+    put:
+      operationId: episodes_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Epizod.
+        required: true
+      tags:
+      - episodes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EpisodeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EpisodeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EpisodeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Episode'
+          description: ''
+    patch:
+      operationId: episodes_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Epizod.
+        required: true
+      tags:
+      - episodes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEpisodeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEpisodeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEpisodeRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Episode'
+          description: ''
+    delete:
+      operationId: episodes_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Epizod.
+        required: true
+      tags:
+      - episodes
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/episodes/{id}/increment-views/:
+    post:
+      operationId: episodes_increment_views_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Epizod.
+        required: true
+      tags:
+      - episodes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EpisodeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EpisodeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EpisodeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Episode'
+          description: ''
+  /api/genres/:
+    get:
+      operationId: genres_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - genres
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGenreList'
+          description: ''
+    post:
+      operationId: genres_create
+      tags:
+      - genres
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenreRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GenreRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GenreRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Genre'
+          description: ''
+  /api/genres/{slug}/:
+    get:
+      operationId: genres_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - genres
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Genre'
+          description: ''
+    put:
+      operationId: genres_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - genres
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenreRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GenreRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GenreRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Genre'
+          description: ''
+    patch:
+      operationId: genres_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - genres
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGenreRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedGenreRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedGenreRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Genre'
+          description: ''
+    delete:
+      operationId: genres_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - genres
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/movies/:
+    get:
+      operationId: movies_list
+      parameters:
+      - in: query
+        name: age_rating
+        schema:
+          type: string
+          enum:
+          - G
+          - NC-17
+          - PG
+          - PG-13
+          - R
+        description: |-
+          * `G` - G — Hammabop
+          * `PG` - PG — Ota-ona nazorati tavsiya etiladi
+          * `PG-13` - PG-13 — 13+
+          * `R` - R — 17+
+          * `NC-17` - NC-17 — 18+
+      - in: query
+        name: country
+        schema:
+          type: string
+      - in: query
+        name: genre
+        schema:
+          type: string
+      - in: query
+        name: genre_id
+        schema:
+          type: integer
+      - in: query
+        name: is_premium
+        schema:
+          type: boolean
+      - in: query
+        name: is_published
+        schema:
+          type: boolean
+      - in: query
+        name: language
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: rating_min
+        schema:
+          type: number
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: year_max
+        schema:
+          type: integer
+      - in: query
+        name: year_min
+        schema:
+          type: integer
+      tags:
+      - movies
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMovieListList'
+          description: ''
+    post:
+      operationId: movies_create
+      tags:
+      - movies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovieDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MovieDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MovieDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieDetail'
+          description: ''
+  /api/movies/{slug}/:
+    get:
+      operationId: movies_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - movies
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieDetail'
+          description: ''
+    put:
+      operationId: movies_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - movies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovieDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MovieDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MovieDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieDetail'
+          description: ''
+    patch:
+      operationId: movies_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - movies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMovieDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMovieDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMovieDetailRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieDetail'
+          description: ''
+    delete:
+      operationId: movies_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - movies
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/movies/{slug}/increment-views/:
+    post:
+      operationId: movies_increment_views_create
+      description: Ko'rishlar sonini 1 ga oshirish (atomik).
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - movies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovieDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MovieDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MovieDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieDetail'
+          description: ''
+  /api/movies/new-releases/:
+    get:
+      operationId: movies_new_releases_retrieve
+      description: Yangi qo'shilgan filmlar.
+      tags:
+      - movies
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieDetail'
+          description: ''
+  /api/movies/trending/:
+    get:
+      operationId: movies_trending_retrieve
+      description: Eng ko'p ko'rilgan filmlar.
+      tags:
+      - movies
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieDetail'
+          description: ''
+  /api/recommendations/movies/for-me/:
+    get:
+      operationId: recommendations_movies_for_me_list
+      description: Foydalanuvchiga shaxsiy film tavsiyalari.
+      tags:
+      - recommendations
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovieList'
+          description: ''
+  /api/recommendations/movies/similar/{slug}/:
+    get:
+      operationId: recommendations_movies_similar_list
+      description: Berilgan filmga o'xshash filmlar ro'yxati.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - recommendations
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovieList'
+          description: ''
+  /api/recommendations/series/for-me/:
+    get:
+      operationId: recommendations_series_for_me_list
+      description: Foydalanuvchiga shaxsiy serial tavsiyalari.
+      tags:
+      - recommendations
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SeriesList'
+          description: ''
+  /api/recommendations/series/similar/{slug}/:
+    get:
+      operationId: recommendations_series_similar_list
+      description: Berilgan serialga o'xshash seriallar ro'yxati.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - recommendations
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SeriesList'
+          description: ''
+  /api/search/:
+    get:
+      operationId: search_retrieve
+      description: Filmlar va seriallar bo'yicha umumiy qidiruv.
+      parameters:
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Qidiruv so'zi
+        required: true
+      - in: query
+        name: type
+        schema:
+          type: string
+        description: all | movies | series
+      tags:
+      - search
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/seasons/:
+    get:
+      operationId: seasons_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: series
+        schema:
+          type: integer
+      tags:
+      - seasons
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSeasonList'
+          description: ''
+    post:
+      operationId: seasons_create
+      tags:
+      - seasons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SeasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SeasonRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+          description: ''
+  /api/seasons/{id}/:
+    get:
+      operationId: seasons_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Fasl.
+        required: true
+      tags:
+      - seasons
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+          description: ''
+    put:
+      operationId: seasons_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Fasl.
+        required: true
+      tags:
+      - seasons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SeasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SeasonRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+          description: ''
+    patch:
+      operationId: seasons_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Fasl.
+        required: true
+      tags:
+      - seasons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSeasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSeasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSeasonRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+          description: ''
+    delete:
+      operationId: seasons_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Fasl.
+        required: true
+      tags:
+      - seasons
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/series/:
+    get:
+      operationId: series_list
+      parameters:
+      - in: query
+        name: age_rating
+        schema:
+          type: string
+          enum:
+          - G
+          - NC-17
+          - PG
+          - PG-13
+          - R
+        description: |-
+          * `G` - G — Hammabop
+          * `PG` - PG — Ota-ona nazorati tavsiya etiladi
+          * `PG-13` - PG-13 — 13+
+          * `R` - R — 17+
+          * `NC-17` - NC-17 — 18+
+      - in: query
+        name: genre
+        schema:
+          type: string
+      - in: query
+        name: genre_id
+        schema:
+          type: integer
+      - in: query
+        name: is_premium
+        schema:
+          type: boolean
+      - in: query
+        name: is_published
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - cancelled
+          - completed
+          - ongoing
+        description: |-
+          * `ongoing` - Davom etmoqda
+          * `completed` - Tugagan
+          * `cancelled` - Bekor qilingan
+      - in: query
+        name: year_max
+        schema:
+          type: integer
+      - in: query
+        name: year_min
+        schema:
+          type: integer
+      tags:
+      - series
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSeriesListList'
+          description: ''
+    post:
+      operationId: series_create
+      tags:
+      - series
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeriesDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SeriesDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SeriesDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeriesDetail'
+          description: ''
+  /api/series/{slug}/:
+    get:
+      operationId: series_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - series
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeriesDetail'
+          description: ''
+    put:
+      operationId: series_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - series
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeriesDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SeriesDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SeriesDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeriesDetail'
+          description: ''
+    patch:
+      operationId: series_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - series
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSeriesDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSeriesDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSeriesDetailRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeriesDetail'
+          description: ''
+    delete:
+      operationId: series_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - series
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/series/new-releases/:
+    get:
+      operationId: series_new_releases_retrieve
+      tags:
+      - series
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeriesDetail'
+          description: ''
+  /api/series/trending/:
+    get:
+      operationId: series_trending_retrieve
+      tags:
+      - series
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeriesDetail'
+          description: ''
+  /api/subscriptions/:
+    get:
+      operationId: subscriptions_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - subscriptions
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSubscriptionList'
+          description: ''
+    post:
+      operationId: subscriptions_create
+      tags:
+      - subscriptions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubscriptionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubscriptionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+          description: ''
+  /api/subscriptions/{id}/:
+    get:
+      operationId: subscriptions_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Obuna.
+        required: true
+      tags:
+      - subscriptions
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+          description: ''
+    patch:
+      operationId: subscriptions_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Obuna.
+        required: true
+      tags:
+      - subscriptions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSubscriptionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSubscriptionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSubscriptionRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+          description: ''
+    delete:
+      operationId: subscriptions_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Obuna.
+        required: true
+      tags:
+      - subscriptions
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/subscriptions/{id}/cancel/:
+    post:
+      operationId: subscriptions_cancel_create
+      description: Obunani bekor qilish.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Obuna.
+        required: true
+      tags:
+      - subscriptions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubscriptionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubscriptionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+          description: ''
+  /api/subscriptions/my-subscription/:
+    get:
+      operationId: subscriptions_my_subscription_retrieve
+      description: Hozirgi foydalanuvchining faol obunasi.
+      tags:
+      - subscriptions
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+          description: ''
+  /api/subscriptions/payments/:
+    get:
+      operationId: subscriptions_payments_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - subscriptions
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPaymentList'
+          description: ''
+  /api/subscriptions/payments/{id}/:
+    get:
+      operationId: subscriptions_payments_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this To'lov.
+        required: true
+      tags:
+      - subscriptions
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+  /api/subscriptions/plans/:
+    get:
+      operationId: subscriptions_plans_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - subscriptions
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSubscriptionPlanList'
+          description: ''
+    post:
+      operationId: subscriptions_plans_create
+      tags:
+      - subscriptions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionPlanRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubscriptionPlanRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubscriptionPlanRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPlan'
+          description: ''
+  /api/subscriptions/plans/{slug}/:
+    get:
+      operationId: subscriptions_plans_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - subscriptions
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPlan'
+          description: ''
+    put:
+      operationId: subscriptions_plans_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - subscriptions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionPlanRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubscriptionPlanRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubscriptionPlanRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPlan'
+          description: ''
+    patch:
+      operationId: subscriptions_plans_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - subscriptions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSubscriptionPlanRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSubscriptionPlanRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSubscriptionPlanRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPlan'
+          description: ''
+    delete:
+      operationId: subscriptions_plans_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - subscriptions
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/subscriptions/subscribe/:
+    post:
+      operationId: subscriptions_subscribe_create
+      description: Rejaga obuna bo'lish (soddalashtirilgan, to'lov tizimisiz).
+      tags:
+      - subscriptions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscribeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubscribeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubscribeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+          description: ''
+  /api/subtitles/:
+    get:
+      operationId: subtitles_list
+      parameters:
+      - in: query
+        name: language
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: video_file
+        schema:
+          type: integer
+      tags:
+      - subtitles
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSubtitleList'
+          description: ''
+    post:
+      operationId: subtitles_create
+      tags:
+      - subtitles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubtitleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubtitleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubtitleRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subtitle'
+          description: ''
+  /api/subtitles/{id}/:
+    get:
+      operationId: subtitles_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Subtitr.
+        required: true
+      tags:
+      - subtitles
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subtitle'
+          description: ''
+    put:
+      operationId: subtitles_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Subtitr.
+        required: true
+      tags:
+      - subtitles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubtitleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubtitleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubtitleRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subtitle'
+          description: ''
+    patch:
+      operationId: subtitles_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Subtitr.
+        required: true
+      tags:
+      - subtitles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSubtitleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSubtitleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSubtitleRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subtitle'
+          description: ''
+    delete:
+      operationId: subtitles_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Subtitr.
+        required: true
+      tags:
+      - subtitles
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/uploads/:
+    get:
+      operationId: uploads_list
+      description: |-
+        Chunked (bo'laklab) fayl yuklash — Tus Protocol soddalashtirilgan versiyasi.
+
+        Workflow:
+        1. POST /api/uploads/initiate/     — sessiya ochish
+        2. POST /api/uploads/{id}/chunk/   — har bir bo'lakni yuborish
+        3. POST /api/uploads/{id}/complete/ — barcha bo'laklarni birlashtirish
+        4. GET  /api/uploads/{id}/status/  — yuklash holatini tekshirish
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - uploads
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUploadList'
+          description: ''
+    post:
+      operationId: uploads_create
+      description: |-
+        Chunked (bo'laklab) fayl yuklash — Tus Protocol soddalashtirilgan versiyasi.
+
+        Workflow:
+        1. POST /api/uploads/initiate/     — sessiya ochish
+        2. POST /api/uploads/{id}/chunk/   — har bir bo'lakni yuborish
+        3. POST /api/uploads/{id}/complete/ — barcha bo'laklarni birlashtirish
+        4. GET  /api/uploads/{id}/status/  — yuklash holatini tekshirish
+      tags:
+      - uploads
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UploadRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+          description: ''
+  /api/uploads/{upload_id}/:
+    get:
+      operationId: uploads_retrieve
+      description: |-
+        Chunked (bo'laklab) fayl yuklash — Tus Protocol soddalashtirilgan versiyasi.
+
+        Workflow:
+        1. POST /api/uploads/initiate/     — sessiya ochish
+        2. POST /api/uploads/{id}/chunk/   — har bir bo'lakni yuborish
+        3. POST /api/uploads/{id}/complete/ — barcha bo'laklarni birlashtirish
+        4. GET  /api/uploads/{id}/status/  — yuklash holatini tekshirish
+      parameters:
+      - in: path
+        name: upload_id
+        schema:
+          type: string
+          pattern: ^[0-9a-f-]{36}$
+        required: true
+      tags:
+      - uploads
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+          description: ''
+    delete:
+      operationId: uploads_destroy
+      description: |-
+        Chunked (bo'laklab) fayl yuklash — Tus Protocol soddalashtirilgan versiyasi.
+
+        Workflow:
+        1. POST /api/uploads/initiate/     — sessiya ochish
+        2. POST /api/uploads/{id}/chunk/   — har bir bo'lakni yuborish
+        3. POST /api/uploads/{id}/complete/ — barcha bo'laklarni birlashtirish
+        4. GET  /api/uploads/{id}/status/  — yuklash holatini tekshirish
+      parameters:
+      - in: path
+        name: upload_id
+        schema:
+          type: string
+          pattern: ^[0-9a-f-]{36}$
+        required: true
+      tags:
+      - uploads
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/uploads/{upload_id}/cancel/:
+    post:
+      operationId: uploads_cancel_create
+      description: Yuklashni bekor qilish va chunklarni o'chirish.
+      parameters:
+      - in: path
+        name: upload_id
+        schema:
+          type: string
+          pattern: ^[0-9a-f-]{36}$
+        required: true
+      tags:
+      - uploads
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UploadRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+          description: ''
+  /api/uploads/{upload_id}/chunk/:
+    post:
+      operationId: uploads_chunk_create
+      description: '2-qadam: Bitta bo''lakni (chunk) yuklash.'
+      parameters:
+      - in: path
+        name: upload_id
+        schema:
+          type: string
+          pattern: ^[0-9a-f-]{36}$
+        required: true
+      tags:
+      - uploads
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                chunk_number:
+                  type: integer
+                file:
+                  type: string
+                  format: binary
+              required:
+              - chunk_number
+              - file
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+          description: ''
+  /api/uploads/{upload_id}/complete/:
+    post:
+      operationId: uploads_complete_create
+      description: '3-qadam: Barcha chunklarni birlashtirish.'
+      parameters:
+      - in: path
+        name: upload_id
+        schema:
+          type: string
+          pattern: ^[0-9a-f-]{36}$
+        required: true
+      tags:
+      - uploads
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UploadRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+          description: ''
+  /api/uploads/{upload_id}/status/:
+    get:
+      operationId: uploads_status_retrieve
+      description: Yuklash holatini tekshirish (resume uchun).
+      parameters:
+      - in: path
+        name: upload_id
+        schema:
+          type: string
+          pattern: ^[0-9a-f-]{36}$
+        required: true
+      tags:
+      - uploads
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+          description: ''
+  /api/uploads/initiate/:
+    post:
+      operationId: uploads_initiate_create
+      description: '1-qadam: Yangi yuklash sessiyasi ochish.'
+      tags:
+      - uploads
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InitiateUploadRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InitiateUploadRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitiateUploadRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+          description: ''
+  /api/users/:
+    get:
+      operationId: users_list
+      description: Foydalanuvchilarni boshqarish.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserList'
+          description: ''
+    post:
+      operationId: users_create
+      description: Foydalanuvchilarni boshqarish.
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/users/{id}/:
+    get:
+      operationId: users_retrieve
+      description: Foydalanuvchilarni boshqarish.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Foydalanuvchi.
+        required: true
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: users_update
+      description: Foydalanuvchilarni boshqarish.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Foydalanuvchi.
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: users_partial_update
+      description: Foydalanuvchilarni boshqarish.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Foydalanuvchi.
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    delete:
+      operationId: users_destroy
+      description: Foydalanuvchilarni boshqarish.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Foydalanuvchi.
+        required: true
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/users/change-password/:
+    post:
+      operationId: users_change_password_create
+      description: Parolni o'zgartirish.
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/users/me/:
+    get:
+      operationId: users_me_retrieve
+      description: Hozirgi foydalanuvchi profili.
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: users_me_update
+      description: Hozirgi foydalanuvchi profili.
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: users_me_partial_update
+      description: Hozirgi foydalanuvchi profili.
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/video-files/:
+    get:
+      operationId: video_files_list
+      parameters:
+      - in: query
+        name: episode
+        schema:
+          type: integer
+      - in: query
+        name: movie
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: quality
+        schema:
+          type: string
+          enum:
+          - 1080p
+          - 1440p
+          - 2160p
+          - 360p
+          - 480p
+          - 720p
+        description: |-
+          * `360p` - 360p
+          * `480p` - 480p
+          * `720p` - 720p HD
+          * `1080p` - 1080p Full HD
+          * `1440p` - 1440p 2K
+          * `2160p` - 2160p 4K
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - failed
+          - pending
+          - processing
+          - ready
+        description: |-
+          * `pending` - Kutmoqda
+          * `processing` - Qayta ishlanmoqda
+          * `ready` - Tayyor
+          * `failed` - Xatolik
+      tags:
+      - video-files
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVideoFileList'
+          description: ''
+    post:
+      operationId: video_files_create
+      tags:
+      - video-files
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoFileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VideoFileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VideoFileRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoFile'
+          description: ''
+  /api/video-files/{id}/:
+    get:
+      operationId: video_files_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Video fayl.
+        required: true
+      tags:
+      - video-files
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoFile'
+          description: ''
+    put:
+      operationId: video_files_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Video fayl.
+        required: true
+      tags:
+      - video-files
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoFileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VideoFileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VideoFileRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoFile'
+          description: ''
+    patch:
+      operationId: video_files_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Video fayl.
+        required: true
+      tags:
+      - video-files
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedVideoFileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedVideoFileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedVideoFileRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoFile'
+          description: ''
+    delete:
+      operationId: video_files_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Video fayl.
+        required: true
+      tags:
+      - video-files
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    Actor:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          maxLength: 150
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        biography:
+          type: string
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        photo:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - full_name
+      - id
+      - slug
+    ActorRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        biography:
+          type: string
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        photo:
+          type: string
+          format: binary
+          nullable: true
+      required:
+      - full_name
+    AgeRatingEnum:
+      enum:
+      - G
+      - PG
+      - PG-13
+      - R
+      - NC-17
+      type: string
+      description: |-
+        * `G` - G — Hammabop
+        * `PG` - PG — Ota-ona nazorati tavsiya etiladi
+        * `PG-13` - PG-13 — 13+
+        * `R` - R — 17+
+        * `NC-17` - NC-17 — 18+
+    AudioTrack:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        video_file:
+          type: integer
+        language:
+          type: string
+          maxLength: 10
+        language_name:
+          type: string
+          maxLength: 50
+        file:
+          type: string
+          format: uri
+          nullable: true
+        is_default:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - language
+      - video_file
+    AudioTrackRequest:
+      type: object
+      properties:
+        video_file:
+          type: integer
+        language:
+          type: string
+          minLength: 1
+          maxLength: 10
+        language_name:
+          type: string
+          maxLength: 50
+        file:
+          type: string
+          format: binary
+          nullable: true
+        is_default:
+          type: boolean
+      required:
+      - language
+      - video_file
+    BufferingEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+          nullable: true
+        video_file:
+          type: integer
+        position_seconds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        duration_ms:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Buffering qancha davom etdi
+        network_type:
+          type: string
+          description: wifi / 4g / 5g / ethernet
+          maxLength: 30
+        cdn_node:
+          type: string
+          maxLength: 100
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - user
+      - video_file
+    BufferingEventRequest:
+      type: object
+      properties:
+        video_file:
+          type: integer
+        position_seconds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        duration_ms:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Buffering qancha davom etdi
+        network_type:
+          type: string
+          description: wifi / 4g / 5g / ethernet
+          maxLength: 30
+        cdn_node:
+          type: string
+          maxLength: 100
+      required:
+      - video_file
+    CustomTokenObtainPairRequest:
+      type: object
+      description: Login — username yoki email orqali kirish.
+      properties:
+        username:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - password
+      - username
+    Episode:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        season:
+          type: integer
+        number:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Epizod raqami
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        duration_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        thumbnail:
+          type: string
+          format: uri
+          nullable: true
+        air_date:
+          type: string
+          format: date
+          nullable: true
+        views_count:
+          type: integer
+          readOnly: true
+        video_files:
+          type: array
+          items:
+            $ref: '#/components/schemas/VideoFile'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - number
+      - season
+      - title
+      - video_files
+      - views_count
+    EpisodeRequest:
+      type: object
+      properties:
+        season:
+          type: integer
+        number:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Epizod raqami
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+        duration_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        thumbnail:
+          type: string
+          format: binary
+          nullable: true
+        air_date:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - number
+      - season
+      - title
+    Favorite:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        movie:
+          type: integer
+          nullable: true
+        series:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - movie
+      - series
+      - user
+    FavoriteRequest:
+      type: object
+      properties:
+        movie:
+          type: integer
+          nullable: true
+        series:
+          type: integer
+          nullable: true
+      required:
+      - movie
+      - series
+    Genre:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 80
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+      required:
+      - id
+      - name
+      - slug
+    GenreRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 80
+        description:
+          type: string
+      required:
+      - name
+    InitiateUploadRequest:
+      type: object
+      properties:
+        filename:
+          type: string
+          minLength: 1
+          maxLength: 500
+        total_size:
+          type: integer
+          minimum: 1
+        content_type:
+          type: string
+          maxLength: 200
+        metadata: {}
+      required:
+      - filename
+      - total_size
+    MaxQualityEnum:
+      enum:
+      - 480p
+      - 720p
+      - 1080p
+      - 2160p
+      type: string
+      description: |-
+        * `480p` - 480p
+        * `720p` - 720p
+        * `1080p` - 1080p
+        * `2160p` - 4K
+    MovieDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          title: Nomi
+          maxLength: 255
+        original_title:
+          type: string
+          maxLength: 255
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        short_description:
+          type: string
+          maxLength: 500
+        release_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        country:
+          type: string
+          maxLength: 100
+        language:
+          type: string
+          maxLength: 50
+        age_rating:
+          $ref: '#/components/schemas/AgeRatingEnum'
+        imdb_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,1})?$
+          nullable: true
+        duration_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+          title: Davomiyligi (daqiqa)
+        director:
+          type: string
+          maxLength: 150
+        thumbnail:
+          type: string
+          format: uri
+          nullable: true
+        poster:
+          type: string
+          format: uri
+          nullable: true
+        trailer_url:
+          type: string
+          format: uri
+          maxLength: 200
+        is_premium:
+          type: boolean
+          title: Premium (obuna kerak)
+        is_published:
+          type: boolean
+        views_count:
+          type: integer
+          readOnly: true
+        genres:
+          type: array
+          items:
+            $ref: '#/components/schemas/Genre'
+          readOnly: true
+        actors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Actor'
+          readOnly: true
+        video_files:
+          type: array
+          items:
+            $ref: '#/components/schemas/VideoFile'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - actors
+      - created_at
+      - genres
+      - id
+      - slug
+      - title
+      - updated_at
+      - video_files
+      - views_count
+    MovieDetailRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          title: Nomi
+          maxLength: 255
+        original_title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        short_description:
+          type: string
+          maxLength: 500
+        release_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        country:
+          type: string
+          maxLength: 100
+        language:
+          type: string
+          maxLength: 50
+        age_rating:
+          $ref: '#/components/schemas/AgeRatingEnum'
+        imdb_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,1})?$
+          nullable: true
+        duration_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+          title: Davomiyligi (daqiqa)
+        director:
+          type: string
+          maxLength: 150
+        thumbnail:
+          type: string
+          format: binary
+          nullable: true
+        poster:
+          type: string
+          format: binary
+          nullable: true
+        trailer_url:
+          type: string
+          format: uri
+          maxLength: 200
+        is_premium:
+          type: boolean
+          title: Premium (obuna kerak)
+        is_published:
+          type: boolean
+        genre_ids:
+          type: array
+          items:
+            type: integer
+            writeOnly: true
+          writeOnly: true
+        actor_ids:
+          type: array
+          items:
+            type: integer
+            writeOnly: true
+          writeOnly: true
+      required:
+      - title
+    MovieList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          title: Nomi
+          maxLength: 255
+        slug:
+          type: string
+          maxLength: 280
+          pattern: ^[-a-zA-Z0-9_]+$
+        short_description:
+          type: string
+          maxLength: 500
+        release_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        duration_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+          title: Davomiyligi (daqiqa)
+        age_rating:
+          $ref: '#/components/schemas/AgeRatingEnum'
+        imdb_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,1})?$
+          nullable: true
+        thumbnail:
+          type: string
+          format: uri
+          nullable: true
+        poster:
+          type: string
+          format: uri
+          nullable: true
+        is_premium:
+          type: boolean
+          title: Premium (obuna kerak)
+        views_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        genres:
+          type: array
+          items:
+            $ref: '#/components/schemas/Genre'
+          readOnly: true
+      required:
+      - genres
+      - id
+      - title
+    PaginatedActorList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Actor'
+    PaginatedAudioTrackList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AudioTrack'
+    PaginatedBufferingEventList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BufferingEvent'
+    PaginatedEpisodeList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Episode'
+    PaginatedFavoriteList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Favorite'
+    PaginatedGenreList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Genre'
+    PaginatedMovieListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MovieList'
+    PaginatedPaymentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+    PaginatedSeasonList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Season'
+    PaginatedSeriesListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeriesList'
+    PaginatedSubscriptionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subscription'
+    PaginatedSubscriptionPlanList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriptionPlan'
+    PaginatedSubtitleList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subtitle'
+    PaginatedUploadList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Upload'
+    PaginatedUserList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    PaginatedVideoFileList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/VideoFile'
+    PaginatedWatchHistoryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/WatchHistory'
+    PaginatedWatchProgressList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/WatchProgress'
+    PatchedActorRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        biography:
+          type: string
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        photo:
+          type: string
+          format: binary
+          nullable: true
+    PatchedAudioTrackRequest:
+      type: object
+      properties:
+        video_file:
+          type: integer
+        language:
+          type: string
+          minLength: 1
+          maxLength: 10
+        language_name:
+          type: string
+          maxLength: 50
+        file:
+          type: string
+          format: binary
+          nullable: true
+        is_default:
+          type: boolean
+    PatchedEpisodeRequest:
+      type: object
+      properties:
+        season:
+          type: integer
+        number:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Epizod raqami
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+        duration_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        thumbnail:
+          type: string
+          format: binary
+          nullable: true
+        air_date:
+          type: string
+          format: date
+          nullable: true
+    PatchedGenreRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 80
+        description:
+          type: string
+    PatchedMovieDetailRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          title: Nomi
+          maxLength: 255
+        original_title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        short_description:
+          type: string
+          maxLength: 500
+        release_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        country:
+          type: string
+          maxLength: 100
+        language:
+          type: string
+          maxLength: 50
+        age_rating:
+          $ref: '#/components/schemas/AgeRatingEnum'
+        imdb_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,1})?$
+          nullable: true
+        duration_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+          title: Davomiyligi (daqiqa)
+        director:
+          type: string
+          maxLength: 150
+        thumbnail:
+          type: string
+          format: binary
+          nullable: true
+        poster:
+          type: string
+          format: binary
+          nullable: true
+        trailer_url:
+          type: string
+          format: uri
+          maxLength: 200
+        is_premium:
+          type: boolean
+          title: Premium (obuna kerak)
+        is_published:
+          type: boolean
+        genre_ids:
+          type: array
+          items:
+            type: integer
+            writeOnly: true
+          writeOnly: true
+        actor_ids:
+          type: array
+          items:
+            type: integer
+            writeOnly: true
+          writeOnly: true
+    PatchedSeasonRequest:
+      type: object
+      properties:
+        series:
+          type: integer
+        number:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Fasl raqami
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        release_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        poster:
+          type: string
+          format: binary
+          nullable: true
+    PatchedSeriesDetailRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          title: Nomi
+          maxLength: 255
+        original_title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        short_description:
+          type: string
+          maxLength: 500
+        release_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        country:
+          type: string
+          maxLength: 100
+        language:
+          type: string
+          maxLength: 50
+        age_rating:
+          $ref: '#/components/schemas/AgeRatingEnum'
+        imdb_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,1})?$
+          nullable: true
+        status:
+          $ref: '#/components/schemas/Status20fEnum'
+        total_seasons:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        total_episodes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        thumbnail:
+          type: string
+          format: binary
+          nullable: true
+        poster:
+          type: string
+          format: binary
+          nullable: true
+        trailer_url:
+          type: string
+          format: uri
+          maxLength: 200
+        is_premium:
+          type: boolean
+          title: Premium (obuna kerak)
+        is_published:
+          type: boolean
+        genre_ids:
+          type: array
+          items:
+            type: integer
+            writeOnly: true
+          writeOnly: true
+        actor_ids:
+          type: array
+          items:
+            type: integer
+            writeOnly: true
+          writeOnly: true
+    PatchedSubscriptionPlanRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          title: Nomi
+          maxLength: 100
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        currency:
+          type: string
+          minLength: 1
+          maxLength: 10
+        period:
+          $ref: '#/components/schemas/PeriodEnum'
+        duration_days:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        max_quality:
+          $ref: '#/components/schemas/MaxQualityEnum'
+        max_concurrent_streams:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        allows_downloads:
+          type: boolean
+        is_active:
+          type: boolean
+    PatchedSubscriptionRequest:
+      type: object
+      properties:
+        plan:
+          type: integer
+        status:
+          $ref: '#/components/schemas/SubscriptionStatusEnum'
+        started_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        auto_renew:
+          type: boolean
+    PatchedSubtitleRequest:
+      type: object
+      properties:
+        video_file:
+          type: integer
+        language:
+          type: string
+          minLength: 1
+          description: 'ISO 639-1 kodi, masalan: uz, en, ru'
+          maxLength: 10
+        language_name:
+          type: string
+          maxLength: 50
+        file:
+          type: string
+          format: binary
+          description: .vtt yoki .srt fayli
+        is_default:
+          type: boolean
+    PatchedUserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        avatar:
+          type: string
+          format: binary
+          nullable: true
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+          title: Tug'ilgan sana
+        phone:
+          type: string
+          title: Telefon
+          maxLength: 20
+        preferred_language:
+          allOf:
+          - $ref: '#/components/schemas/PreferredLanguageEnum'
+          title: Afzal til
+    PatchedVideoFileRequest:
+      type: object
+      properties:
+        movie:
+          type: integer
+          nullable: true
+        episode:
+          type: integer
+          nullable: true
+        quality:
+          $ref: '#/components/schemas/QualityEnum'
+        file:
+          type: string
+          format: binary
+          nullable: true
+        hls_manifest_url:
+          type: string
+          format: uri
+          description: HLS .m3u8 playlist URL
+          maxLength: 200
+        dash_manifest_url:
+          type: string
+          format: uri
+          description: DASH .mpd manifest URL
+          maxLength: 200
+        size_bytes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        duration_seconds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        bitrate_kbps:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        status:
+          $ref: '#/components/schemas/VideoFileStatusEnum'
+        is_encrypted:
+          type: boolean
+          title: DRM shifrlangan
+    PatchedWatchProgressRequest:
+      type: object
+      properties:
+        movie:
+          type: integer
+          nullable: true
+        episode:
+          type: integer
+          nullable: true
+        position_seconds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Qayerda to'xtagan (soniya)
+        duration_seconds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Umumiy davomiyligi
+        completed:
+          type: boolean
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        subscription:
+          type: integer
+          nullable: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        currency:
+          type: string
+          maxLength: 10
+        provider:
+          $ref: '#/components/schemas/ProviderEnum'
+        status:
+          $ref: '#/components/schemas/PaymentStatusEnum'
+        external_id:
+          type: string
+          description: To'lov tizimi tranzaksiya ID
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        completed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - amount
+      - completed_at
+      - created_at
+      - id
+      - user
+    PaymentStatusEnum:
+      enum:
+      - pending
+      - completed
+      - failed
+      - refunded
+      type: string
+      description: |-
+        * `pending` - Kutilmoqda
+        * `completed` - Yakunlangan
+        * `failed` - Muvaffaqiyatsiz
+        * `refunded` - Qaytarilgan
+    PeriodEnum:
+      enum:
+      - monthly
+      - quarterly
+      - yearly
+      type: string
+      description: |-
+        * `monthly` - Oylik
+        * `quarterly` - Chorak (3 oy)
+        * `yearly` - Yillik
+    PreferredLanguageEnum:
+      enum:
+      - uz
+      - ru
+      - en
+      type: string
+      description: |-
+        * `uz` - O'zbek
+        * `ru` - Rus
+        * `en` - Ingliz
+    ProviderEnum:
+      enum:
+      - click
+      - payme
+      - uzum
+      - visa
+      - manual
+      type: string
+      description: |-
+        * `click` - Click
+        * `payme` - Payme
+        * `uzum` - Uzum
+        * `visa` - Visa/Mastercard
+        * `manual` - Qo'lda
+    QualityEnum:
+      enum:
+      - 360p
+      - 480p
+      - 720p
+      - 1080p
+      - 1440p
+      - 2160p
+      type: string
+      description: |-
+        * `360p` - 360p
+        * `480p` - 480p
+        * `720p` - 720p HD
+        * `1080p` - 1080p Full HD
+        * `1440p` - 1440p 2K
+        * `2160p` - 2160p 4K
+    Register:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+      required:
+      - email
+      - username
+    RegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password2:
+          type: string
+          writeOnly: true
+          minLength: 1
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+      required:
+      - email
+      - password
+      - password2
+      - username
+    Season:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        series:
+          type: integer
+        number:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Fasl raqami
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        release_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        poster:
+          type: string
+          format: uri
+          nullable: true
+        episodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Episode'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - episodes
+      - id
+      - number
+      - series
+    SeasonRequest:
+      type: object
+      properties:
+        series:
+          type: integer
+        number:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Fasl raqami
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        release_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        poster:
+          type: string
+          format: binary
+          nullable: true
+      required:
+      - number
+      - series
+    SeriesDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          title: Nomi
+          maxLength: 255
+        original_title:
+          type: string
+          maxLength: 255
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        short_description:
+          type: string
+          maxLength: 500
+        release_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        country:
+          type: string
+          maxLength: 100
+        language:
+          type: string
+          maxLength: 50
+        age_rating:
+          $ref: '#/components/schemas/AgeRatingEnum'
+        imdb_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,1})?$
+          nullable: true
+        status:
+          $ref: '#/components/schemas/Status20fEnum'
+        total_seasons:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        total_episodes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        thumbnail:
+          type: string
+          format: uri
+          nullable: true
+        poster:
+          type: string
+          format: uri
+          nullable: true
+        trailer_url:
+          type: string
+          format: uri
+          maxLength: 200
+        is_premium:
+          type: boolean
+          title: Premium (obuna kerak)
+        is_published:
+          type: boolean
+        views_count:
+          type: integer
+          readOnly: true
+        genres:
+          type: array
+          items:
+            $ref: '#/components/schemas/Genre'
+          readOnly: true
+        actors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Actor'
+          readOnly: true
+        seasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/Season'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - actors
+      - created_at
+      - genres
+      - id
+      - seasons
+      - slug
+      - title
+      - updated_at
+      - views_count
+    SeriesDetailRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          title: Nomi
+          maxLength: 255
+        original_title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        short_description:
+          type: string
+          maxLength: 500
+        release_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        country:
+          type: string
+          maxLength: 100
+        language:
+          type: string
+          maxLength: 50
+        age_rating:
+          $ref: '#/components/schemas/AgeRatingEnum'
+        imdb_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,1})?$
+          nullable: true
+        status:
+          $ref: '#/components/schemas/Status20fEnum'
+        total_seasons:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        total_episodes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        thumbnail:
+          type: string
+          format: binary
+          nullable: true
+        poster:
+          type: string
+          format: binary
+          nullable: true
+        trailer_url:
+          type: string
+          format: uri
+          maxLength: 200
+        is_premium:
+          type: boolean
+          title: Premium (obuna kerak)
+        is_published:
+          type: boolean
+        genre_ids:
+          type: array
+          items:
+            type: integer
+            writeOnly: true
+          writeOnly: true
+        actor_ids:
+          type: array
+          items:
+            type: integer
+            writeOnly: true
+          writeOnly: true
+      required:
+      - title
+    SeriesList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          title: Nomi
+          maxLength: 255
+        slug:
+          type: string
+          maxLength: 280
+          pattern: ^[-a-zA-Z0-9_]+$
+        short_description:
+          type: string
+          maxLength: 500
+        release_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        status:
+          $ref: '#/components/schemas/Status20fEnum'
+        total_seasons:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        total_episodes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        age_rating:
+          $ref: '#/components/schemas/AgeRatingEnum'
+        imdb_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,1})?$
+          nullable: true
+        thumbnail:
+          type: string
+          format: uri
+          nullable: true
+        poster:
+          type: string
+          format: uri
+          nullable: true
+        is_premium:
+          type: boolean
+          title: Premium (obuna kerak)
+        views_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        genres:
+          type: array
+          items:
+            $ref: '#/components/schemas/Genre'
+          readOnly: true
+      required:
+      - genres
+      - id
+      - title
+    Status20fEnum:
+      enum:
+      - ongoing
+      - completed
+      - cancelled
+      type: string
+      description: |-
+        * `ongoing` - Davom etmoqda
+        * `completed` - Tugagan
+        * `cancelled` - Bekor qilingan
+    SubscribeRequest:
+      type: object
+      properties:
+        plan_id:
+          type: integer
+        auto_renew:
+          type: boolean
+          default: false
+      required:
+      - plan_id
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        plan:
+          type: integer
+        plan_details:
+          allOf:
+          - $ref: '#/components/schemas/SubscriptionPlan'
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/SubscriptionStatusEnum'
+        started_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        auto_renew:
+          type: boolean
+        is_active:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - expires_at
+      - id
+      - is_active
+      - plan
+      - plan_details
+      - updated_at
+      - user
+    SubscriptionPlan:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: Nomi
+          maxLength: 100
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        currency:
+          type: string
+          maxLength: 10
+        period:
+          $ref: '#/components/schemas/PeriodEnum'
+        duration_days:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        max_quality:
+          $ref: '#/components/schemas/MaxQualityEnum'
+        max_concurrent_streams:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        allows_downloads:
+          type: boolean
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - price
+      - slug
+    SubscriptionPlanRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          title: Nomi
+          maxLength: 100
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        currency:
+          type: string
+          minLength: 1
+          maxLength: 10
+        period:
+          $ref: '#/components/schemas/PeriodEnum'
+        duration_days:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        max_quality:
+          $ref: '#/components/schemas/MaxQualityEnum'
+        max_concurrent_streams:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        allows_downloads:
+          type: boolean
+        is_active:
+          type: boolean
+      required:
+      - name
+      - price
+      - slug
+    SubscriptionRequest:
+      type: object
+      properties:
+        plan:
+          type: integer
+        status:
+          $ref: '#/components/schemas/SubscriptionStatusEnum'
+        started_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        auto_renew:
+          type: boolean
+      required:
+      - expires_at
+      - plan
+    SubscriptionStatusEnum:
+      enum:
+      - active
+      - expired
+      - cancelled
+      - pending
+      type: string
+      description: |-
+        * `active` - Faol
+        * `expired` - Muddati tugagan
+        * `cancelled` - Bekor qilingan
+        * `pending` - Kutilmoqda
+    Subtitle:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        video_file:
+          type: integer
+        language:
+          type: string
+          description: 'ISO 639-1 kodi, masalan: uz, en, ru'
+          maxLength: 10
+        language_name:
+          type: string
+          maxLength: 50
+        file:
+          type: string
+          format: uri
+          description: .vtt yoki .srt fayli
+        is_default:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - file
+      - id
+      - language
+      - video_file
+    SubtitleRequest:
+      type: object
+      properties:
+        video_file:
+          type: integer
+        language:
+          type: string
+          minLength: 1
+          description: 'ISO 639-1 kodi, masalan: uz, en, ru'
+          maxLength: 10
+        language_name:
+          type: string
+          maxLength: 50
+        file:
+          type: string
+          format: binary
+          description: .vtt yoki .srt fayli
+        is_default:
+          type: boolean
+      required:
+      - file
+      - language
+      - video_file
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    TokenVerifyRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - token
+    UpdateProgressRequest:
+      type: object
+      properties:
+        movie_id:
+          type: integer
+        episode_id:
+          type: integer
+        position_seconds:
+          type: integer
+          minimum: 0
+        duration_seconds:
+          type: integer
+          minimum: 0
+      required:
+      - position_seconds
+    Upload:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        upload_id:
+          type: string
+          format: uuid
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        filename:
+          type: string
+          maxLength: 500
+        content_type:
+          type: string
+          maxLength: 200
+        total_size:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          description: Umumiy fayl hajmi (bayt)
+        uploaded_bytes:
+          type: integer
+          readOnly: true
+        progress_percentage:
+          type: number
+          format: double
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/UploadStatusEnum'
+          readOnly: true
+        final_file:
+          type: string
+          format: uri
+          readOnly: true
+          nullable: true
+        metadata: {}
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - filename
+      - final_file
+      - id
+      - progress_percentage
+      - status
+      - total_size
+      - updated_at
+      - upload_id
+      - uploaded_bytes
+      - user
+    UploadRequest:
+      type: object
+      properties:
+        filename:
+          type: string
+          minLength: 1
+          maxLength: 500
+        content_type:
+          type: string
+          maxLength: 200
+        total_size:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          description: Umumiy fayl hajmi (bayt)
+        metadata: {}
+      required:
+      - filename
+      - total_size
+    UploadStatusEnum:
+      enum:
+      - in_progress
+      - completed
+      - failed
+      - cancelled
+      type: string
+      description: |-
+        * `in_progress` - Davom etmoqda
+        * `completed` - Tugallangan
+        * `failed` - Xatolik
+        * `cancelled` - Bekor qilingan
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        avatar:
+          type: string
+          format: uri
+          nullable: true
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+          title: Tug'ilgan sana
+        phone:
+          type: string
+          title: Telefon
+          maxLength: 20
+        preferred_language:
+          allOf:
+          - $ref: '#/components/schemas/PreferredLanguageEnum'
+          title: Afzal til
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - date_joined
+      - email
+      - id
+      - username
+    UserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        avatar:
+          type: string
+          format: binary
+          nullable: true
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+          title: Tug'ilgan sana
+        phone:
+          type: string
+          title: Telefon
+          maxLength: 20
+        preferred_language:
+          allOf:
+          - $ref: '#/components/schemas/PreferredLanguageEnum'
+          title: Afzal til
+      required:
+      - email
+      - username
+    VideoFile:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        movie:
+          type: integer
+          nullable: true
+        episode:
+          type: integer
+          nullable: true
+        quality:
+          $ref: '#/components/schemas/QualityEnum'
+        file:
+          type: string
+          format: uri
+          nullable: true
+        hls_manifest_url:
+          type: string
+          format: uri
+          description: HLS .m3u8 playlist URL
+          maxLength: 200
+        dash_manifest_url:
+          type: string
+          format: uri
+          description: DASH .mpd manifest URL
+          maxLength: 200
+        size_bytes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        duration_seconds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        bitrate_kbps:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        status:
+          $ref: '#/components/schemas/VideoFileStatusEnum'
+        is_encrypted:
+          type: boolean
+          title: DRM shifrlangan
+        subtitles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subtitle'
+          readOnly: true
+        audio_tracks:
+          type: array
+          items:
+            $ref: '#/components/schemas/AudioTrack'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - audio_tracks
+      - created_at
+      - id
+      - quality
+      - subtitles
+      - updated_at
+    VideoFileRequest:
+      type: object
+      properties:
+        movie:
+          type: integer
+          nullable: true
+        episode:
+          type: integer
+          nullable: true
+        quality:
+          $ref: '#/components/schemas/QualityEnum'
+        file:
+          type: string
+          format: binary
+          nullable: true
+        hls_manifest_url:
+          type: string
+          format: uri
+          description: HLS .m3u8 playlist URL
+          maxLength: 200
+        dash_manifest_url:
+          type: string
+          format: uri
+          description: DASH .mpd manifest URL
+          maxLength: 200
+        size_bytes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        duration_seconds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        bitrate_kbps:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        status:
+          $ref: '#/components/schemas/VideoFileStatusEnum'
+        is_encrypted:
+          type: boolean
+          title: DRM shifrlangan
+      required:
+      - quality
+    VideoFileStatusEnum:
+      enum:
+      - pending
+      - processing
+      - ready
+      - failed
+      type: string
+      description: |-
+        * `pending` - Kutmoqda
+        * `processing` - Qayta ishlanmoqda
+        * `ready` - Tayyor
+        * `failed` - Xatolik
+    WatchHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        movie:
+          type: integer
+          nullable: true
+        episode:
+          type: integer
+          nullable: true
+        watched_seconds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        device:
+          type: string
+          maxLength: 100
+        ip_address:
+          type: string
+          readOnly: true
+          nullable: true
+        started_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - id
+      - ip_address
+      - started_at
+      - user
+    WatchHistoryRequest:
+      type: object
+      properties:
+        movie:
+          type: integer
+          nullable: true
+        episode:
+          type: integer
+          nullable: true
+        watched_seconds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        device:
+          type: string
+          maxLength: 100
+    WatchProgress:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        movie:
+          type: integer
+          nullable: true
+        episode:
+          type: integer
+          nullable: true
+        position_seconds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Qayerda to'xtagan (soniya)
+        duration_seconds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Umumiy davomiyligi
+        completed:
+          type: boolean
+        percentage:
+          type: number
+          format: double
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - episode
+      - id
+      - movie
+      - percentage
+      - updated_at
+      - user
+    WatchProgressRequest:
+      type: object
+      properties:
+        movie:
+          type: integer
+          nullable: true
+        episode:
+          type: integer
+          nullable: true
+        position_seconds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Qayerda to'xtagan (soniya)
+        duration_seconds:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Umumiy davomiyligi
+        completed:
+          type: boolean
+      required:
+      - episode
+      - movie
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+- name: auth
+  description: Ro'yxatdan o'tish, login, JWT token
+- name: users
+  description: Foydalanuvchi profili
+- name: movies
+  description: Filmlar
+- name: series
+  description: Seriallar
+- name: seasons
+  description: Fasllar
+- name: episodes
+  description: Epizodlar
+- name: genres
+  description: Janrlar
+- name: actors
+  description: Aktyorlar
+- name: video-files
+  description: Video fayllar va sifat variantlari
+- name: subtitles
+  description: Subtitrlar
+- name: audio-tracks
+  description: Audio treklar
+- name: subscriptions
+  description: Obuna va rejalar
+- name: watch-progress
+  description: Ko'rish progressi
+- name: history
+  description: Ko'rish tarixi
+- name: analytics
+  description: Analitika va buffering eventlari
+- name: recommendations
+  description: Tavsiyalar tizimi
+- name: uploads
+  description: Chunked fayl yuklash
+- name: search
+  description: Qidiruv
