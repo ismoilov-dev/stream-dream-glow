@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 export function PopularMovies() {
   const { data: popularMovies, isLoading } = useMovies({
     ordering: '-views',
-    page_size: 20,
+    limit: 20,
   });
 
   if (isLoading) {
