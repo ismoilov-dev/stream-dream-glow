@@ -1,0 +1,15 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/login/page": "app/login/page.js",
+  "/movies/[slug]/page": "app/movies/[slug]/page.js",
+  "/movies/page": "app/movies/page.js",
+  "/page": "app/page.js",
+  "/profile/page": "app/profile/page.js",
+  "/register/page": "app/register/page.js",
+  "/search/page": "app/search/page.js",
+  "/series/[slug]/page": "app/series/[slug]/page.js",
+  "/series/page": "app/series/page.js",
+  "/settings/page": "app/settings/page.js"
+}
