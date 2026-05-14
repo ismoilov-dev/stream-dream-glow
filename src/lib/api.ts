@@ -20,14 +20,24 @@ import type {
   WatchProgress,
 } from "./types";
 
-export const API_BASE = "/api/proxy/api";
-export const PROXY_ROOT = "/api/proxy";
+// ─── Base URLs ────────────────────────────────────────────────────────────────
+// Barcha API so'rovlari bevosita backendga ketadi.
+// Development: vite.config.ts dagi proxy "/api" → "http://16.170.235.75" ga yo'naltiradi.
+// Production:  VITE_API_URL env o'zgaruvchisi orqali to'g'ridan-to'g'ri backend URL.
+const BACKEND = import.meta.env.VITE_API_URL ?? "http://16.170.235.75";
+
+export const API_BASE = `${BACKEND}/api`;
+
+// Rasmlar/mediya fayllar uchun proxy root (same-origin HTTPS orqali)
+export const PROXY_ROOT = `${BACKEND}`;
 
 export const api = axios.create({
   baseURL: API_BASE,
   headers: { "Content-Type": "application/json" },
+  withCredentials: false,
 });
 
+// ─── Request interceptor: Bearer token qo'shish ──────────────────────────────
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const token = useAuthStore.getState().tokens?.access;
   if (token && config.headers) {
@@ -36,6 +46,7 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
+// ─── Response interceptor: 401 da token yangilash ────────────────────────────
 let refreshing: Promise<string | null> | null = null;
 
 api.interceptors.response.use(
@@ -45,7 +56,12 @@ api.interceptors.response.use(
     const status = error.response?.status;
     const refresh = useAuthStore.getState().tokens?.refresh;
 
-    if (status === 401 && refresh && !original._retry && !original.url?.includes("/auth/")) {
+    if (
+      status === 401 &&
+      refresh &&
+      !original._retry &&
+      !original.url?.includes("/auth/")
+    ) {
       original._retry = true;
       try {
         if (!refreshing) {
@@ -78,11 +94,11 @@ api.interceptors.response.use(
   },
 );
 
-// ---------- Endpoint helpers ----------
-
+// ─── Auth ─────────────────────────────────────────────────────────────────────
 export const Auth = {
   login: (username: string, password: string) =>
     api.post<AuthTokens>("/auth/login/", { username, password }).then((r) => r.data),
+
   register: (payload: {
     username: string;
     email: string;
@@ -91,11 +107,15 @@ export const Auth = {
     first_name?: string;
     last_name?: string;
   }) => api.post("/auth/register/", payload).then((r) => r.data),
+
   refresh: (refresh: string) =>
     api.post<{ access: string }>("/auth/refresh/", { refresh }).then((r) => r.data),
-  verify: (token: string) => api.post("/auth/verify/", { token }).then((r) => r.data),
+
+  verify: (token: string) =>
+    api.post("/auth/verify/", { token }).then((r) => r.data),
 };
 
+// ─── Users ────────────────────────────────────────────────────────────────────
 export const Users = {
   me: () => api.get<User>("/users/me/").then((r) => r.data),
   update: (id: number, payload: Partial<User>) =>
@@ -106,16 +126,16 @@ export const Users = {
     api.get<Paginated<User>>("/users/", { params }).then((r) => r.data),
 };
 
+// ─── Movies ───────────────────────────────────────────────────────────────────
 export const Movies = {
   list: (params?: Record<string, unknown>) =>
     api.get<Paginated<MovieListItem>>("/movies/", { params }).then((r) => r.data),
-  detail: (slug: string) => api.get<MovieDetail>(`/movies/${slug}/`).then((r) => r.data),
+  detail: (slug: string) =>
+    api.get<MovieDetail>(`/movies/${slug}/`).then((r) => r.data),
   trending: () =>
     api.get<MovieListItem[] | Paginated<MovieListItem>>("/movies/trending/").then((r) => r.data),
   newReleases: () =>
-    api
-      .get<MovieListItem[] | Paginated<MovieListItem>>("/movies/new-releases/")
-      .then((r) => r.data),
+    api.get<MovieListItem[] | Paginated<MovieListItem>>("/movies/new-releases/").then((r) => r.data),
   incrementViews: (slug: string) =>
     api.post(`/movies/${slug}/increment-views/`).then((r) => r.data),
   similar: (slug: string) =>
@@ -128,10 +148,12 @@ export const Movies = {
       .then((r) => r.data),
 };
 
+// ─── Series ───────────────────────────────────────────────────────────────────
 export const SeriesApi = {
   list: (params?: Record<string, unknown>) =>
     api.get<Paginated<SeriesListItem>>("/series/", { params }).then((r) => r.data),
-  detail: (slug: string) => api.get<SeriesDetail>(`/series/${slug}/`).then((r) => r.data),
+  detail: (slug: string) =>
+    api.get<SeriesDetail>(`/series/${slug}/`).then((r) => r.data),
   trending: () =>
     api.get<SeriesListItem[] | Paginated<SeriesListItem>>("/series/trending/").then((r) => r.data),
   newReleases: () =>
@@ -148,49 +170,65 @@ export const SeriesApi = {
       .then((r) => r.data),
 };
 
+// ─── Seasons & Episodes ───────────────────────────────────────────────────────
 export const Seasons = {
   list: (params?: Record<string, unknown>) =>
     api.get<Paginated<Season>>("/seasons/", { params }).then((r) => r.data),
-  detail: (id: number) => api.get<Season>(`/seasons/${id}/`).then((r) => r.data),
+  detail: (id: number) =>
+    api.get<Season>(`/seasons/${id}/`).then((r) => r.data),
 };
 
 export const Episodes = {
   list: (params?: Record<string, unknown>) =>
     api.get<Paginated<Episode>>("/episodes/", { params }).then((r) => r.data),
-  detail: (id: number) => api.get<Episode>(`/episodes/${id}/`).then((r) => r.data),
+  detail: (id: number) =>
+    api.get<Episode>(`/episodes/${id}/`).then((r) => r.data),
   incrementViews: (id: number) =>
     api.post(`/episodes/${id}/increment-views/`).then((r) => r.data),
 };
 
+// ─── Genres & Actors ──────────────────────────────────────────────────────────
 export const Genres = {
   list: () => api.get<Paginated<Genre>>("/genres/").then((r) => r.data),
-  detail: (slug: string) => api.get<Genre>(`/genres/${slug}/`).then((r) => r.data),
+  detail: (slug: string) =>
+    api.get<Genre>(`/genres/${slug}/`).then((r) => r.data),
 };
 
 export const Actors = {
   list: (params?: Record<string, unknown>) =>
     api.get<Paginated<Actor>>("/actors/", { params }).then((r) => r.data),
-  detail: (slug: string) => api.get<Actor>(`/actors/${slug}/`).then((r) => r.data),
+  detail: (slug: string) =>
+    api.get<Actor>(`/actors/${slug}/`).then((r) => r.data),
 };
 
+// ─── Search ───────────────────────────────────────────────────────────────────
 export const Search = {
-  query: (q: string) => api.get<SearchResults>("/search/", { params: { q } }).then((r) => r.data),
+  query: (q: string) =>
+    api.get<SearchResults>("/search/", { params: { q } }).then((r) => r.data),
 };
 
+// ─── Favorites ────────────────────────────────────────────────────────────────
 export const Favorites = {
-  list: () => api.get<Paginated<Favorite>>("/analytics/favorites/").then((r) => r.data),
+  list: () =>
+    api.get<Paginated<Favorite>>("/analytics/favorites/").then((r) => r.data),
   add: (payload: { movie?: number; series?: number }) =>
     api.post<Favorite>("/analytics/favorites/", payload).then((r) => r.data),
-  remove: (id: number) => api.delete(`/analytics/favorites/${id}/`).then((r) => r.data),
+  remove: (id: number) =>
+    api.delete(`/analytics/favorites/${id}/`).then((r) => r.data),
 };
 
+// ─── Watch History ────────────────────────────────────────────────────────────
 export const History = {
-  list: () => api.get<Paginated<WatchHistory>>("/analytics/history/").then((r) => r.data),
-  clear: () => api.post("/analytics/history/clear/").then((r) => r.data),
+  list: () =>
+    api.get<Paginated<WatchHistory>>("/analytics/history/").then((r) => r.data),
+  clear: () =>
+    api.post("/analytics/history/clear/").then((r) => r.data),
 };
 
+// ─── Watch Progress ───────────────────────────────────────────────────────────
 export const Progress = {
-  list: () => api.get<Paginated<WatchProgress>>("/analytics/progress/").then((r) => r.data),
+  list: () =>
+    api.get<Paginated<WatchProgress>>("/analytics/progress/").then((r) => r.data),
   continueWatching: () =>
     api
       .get<WatchProgress[] | Paginated<WatchProgress>>("/analytics/progress/continue-watching/")
@@ -200,28 +238,37 @@ export const Progress = {
     episode_id?: number;
     position_seconds: number;
     duration_seconds?: number;
-  }) => api.post<WatchProgress>("/analytics/progress/update/", payload).then((r) => r.data),
+  }) =>
+    api.post<WatchProgress>("/analytics/progress/update/", payload).then((r) => r.data),
 };
 
+// ─── Subscriptions ────────────────────────────────────────────────────────────
 export const Subscriptions = {
-  plans: () => api.get<Paginated<SubscriptionPlan>>("/subscriptions/plans/").then((r) => r.data),
-  mine: () => api.get<Subscription>("/subscriptions/my-subscription/").then((r) => r.data),
+  plans: () =>
+    api.get<Paginated<SubscriptionPlan>>("/subscriptions/plans/").then((r) => r.data),
+  mine: () =>
+    api.get<Subscription>("/subscriptions/my-subscription/").then((r) => r.data),
   subscribe: (plan_id: number, provider?: string) =>
     api.post("/subscriptions/subscribe/", { plan_id, provider }).then((r) => r.data),
-  cancel: (id: number) => api.post(`/subscriptions/${id}/cancel/`).then((r) => r.data),
+  cancel: (id: number) =>
+    api.post(`/subscriptions/${id}/cancel/`).then((r) => r.data),
 };
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 export function unwrapList<T>(data: T[] | Paginated<T> | undefined): T[] {
   if (!data) return [];
   if (Array.isArray(data)) return data;
   return data.results ?? [];
 }
 
-/** Rewrite an upstream HTTP asset URL through the same-origin HTTPS proxy. */
+/**
+ * Upstream HTTP asset URL ni to'g'ridan-to'g'ri backend orqali qaytaradi.
+ * (Agar CORS muammosi bo'lsa, same-origin proxy ishlatiladi)
+ */
 export function assetUrl(url?: string | null): string | undefined {
   if (!url) return undefined;
   try {
-    const u = new URL(url, "http://16.170.235.75");
+    const u = new URL(url, BACKEND);
     return `${PROXY_ROOT}${u.pathname}${u.search}`;
   } catch {
     return url;
