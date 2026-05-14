@@ -42,7 +42,7 @@ export function NewReleases() {
         viewport={{ once: true }}
         className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide"
       >
-        {newReleases.map((movie, index) => (
+        {newReleases.map((movie: any, index: number) => (
           <motion.div
             key={movie.slug}
             initial={{ opacity: 0, x: 50 }}
